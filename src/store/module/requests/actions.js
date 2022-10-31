@@ -4,7 +4,6 @@ export default {
       userEmail: payload.email,
       message: payload.message,
     };
-
     const response = await fetch(
       `https://findcoach-3a683-default-rtdb.europe-west1.firebasedatabase.app/requests/${payload.coachId}.json`,
       {
@@ -13,6 +12,8 @@ export default {
       }
     );
 
+    const responseData = await response.json();
+
     if (!response.ok) {
       const error = new Error(
         responseData.message || 'Failed to send request.'
@@ -20,16 +21,11 @@ export default {
       throw error;
     }
 
-    const responseData = await response.json();
-
-    console.log(responseData);
-
     newRequest.id = responseData.name;
     newRequest.coachId = payload.coachId;
 
     context.commit('addRequest', newRequest);
   },
-
   async fetchRequests(context) {
     const coachId = context.rootGetters.userId;
     const response = await fetch(
@@ -39,7 +35,7 @@ export default {
 
     if (!response.ok) {
       const error = new Error(
-        responseData.message || 'Failed to fetch request.'
+        responseData.message || 'Failed to fetch requests.'
       );
       throw error;
     }
@@ -55,6 +51,7 @@ export default {
       };
       requests.push(request);
     }
+
     context.commit('setRequests', requests);
   },
 };
